@@ -71,33 +71,37 @@ module Locomotive
           # @return [ Object] The response of the API or nil if an error occurs
           #
           def post(resource_name, params, locale = nil, raw = false)
+            tries_remaining = 3
             params_name = resource_name.to_s.split('/').last.singularize
 
             query = { query: { params_name => params } }
 
             query[:query][:locale] = locale if locale
 
-            response  = Locomotive::Mounter::EngineApi.post("/#{resource_name}.json", query)
-            data      = response.parsed_response
-
-            if response.success?
-              return data if raw
-              self.raw_data_to_object(data)
-            else
-              message = data
-
-              message = data.map do |attribute, errors|
-                "      #{attribute} => #{[*errors].join(', ')}\n".colorize(color: :red)
-              end.join("\n") if data.respond_to?(:keys)
-
-              raise WriterException.new(message)
-
-              # self.log "\n"
-              # data.each do |attribute, errors|
-              #   self.log "      #{attribute} => #{[*errors].join(', ')}\n".colorize(color: :red)
-              # end if data.respond_to?(:keys)
-              # nil # DEBUG
+            until tries_remaining == 0
+              self.log "Attempting request"
+              response  = Locomotive::Mounter::EngineApi.put("/#{resource_name}/#{id}.json", query)
+              data      = response.parsed_response
+              if response.success?
+                return self.raw_data_to_object(data)
+              end
+              self.log 'Request Failed, Retrying!'
+              tries_remaining -= 1
             end
+
+            message = data
+
+            message = data.map do |attribute, errors|
+              "      #{attribute} => #{[*errors].join(', ')}\n".colorize(color: :red)
+            end.join("\n") if data.respond_to?(:keys)
+
+            raise WriterException.new(message)
+
+            # self.log "\n"
+            # data.each do |attribute, errors|
+            #   self.log "      #{attribute} => #{[*errors].join(', ')}\n".colorize(color: :red)
+            # end if data.respond_to?(:keys)
+            # nil # DEBUG
           end
 
           # Update a resource by the API.
@@ -110,31 +114,36 @@ module Locomotive
           # @return [ Object] The response of the API or nil if an error occurs
           #
           def put(resource_name, id, params, locale = nil)
+            tries_remaining = 3
             params_name = resource_name.to_s.split('/').last.singularize
 
             query = { query: { params_name => params } }
 
             query[:query][:locale] = locale if locale
 
-            response  = Locomotive::Mounter::EngineApi.put("/#{resource_name}/#{id}.json", query)
-            data      = response.parsed_response
-
-            if response.success?
-              self.raw_data_to_object(data)
-            else
-              message = data
-
-              message = data.map do |attribute, errors|
-                "      #{attribute} => #{[*errors].join(', ')}" #.colorize(color: :red)
-              end.join("\n") if data.respond_to?(:keys)
-
-              raise WriterException.new(message)
-
-              # data.each do |attribute, errors|
-              #   self.log "\t\t #{attribute} => #{[*errors].join(', ')}".colorize(color: :red)
-              # end if data.respond_to?(:keys)
-              # nil # DEBUG
+            until tries_remaining == 0
+              self.log "Attempting request"
+              response  = Locomotive::Mounter::EngineApi.put("/#{resource_name}/#{id}.json", query)
+              data      = response.parsed_response
+              if response.success?
+                return self.raw_data_to_object(data)
+              end
+              self.log 'Request Failed, Retrying!'
+              tries_remaining -= 1
             end
+
+            message = data
+
+            message = data.map do |attribute, errors|
+              "      #{attribute} => #{[*errors].join(', ')}" #.colorize(color: :red)
+            end.join("\n") if data.respond_to?(:keys)
+
+            raise WriterException.new(message)
+
+            # data.each do |attribute, errors|
+            #   self.log "\t\t #{attribute} => #{[*errors].join(', ')}".colorize(color: :red)
+            # end if data.respond_to?(:keys)
+            # nil # DEBUG
           end
 
           def safe_attributes
