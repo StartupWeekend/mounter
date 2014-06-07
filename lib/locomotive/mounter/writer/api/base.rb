@@ -85,7 +85,7 @@ module Locomotive
               rescue
                 self.log 'Request Failed!'
               end
-              if response.success?
+              if response && response.success?
                 return self.raw_data_to_object(data)
               end
               self.log 'Retrying!'
@@ -132,7 +132,7 @@ module Locomotive
               rescue
                 self.log 'Request Failed!'
               end
-              if response.success?
+              if response && response.success?
                 return self.raw_data_to_object(data)
               end
               self.log 'Retrying!'
