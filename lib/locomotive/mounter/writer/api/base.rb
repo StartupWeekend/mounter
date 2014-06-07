@@ -80,7 +80,7 @@ module Locomotive
 
             until tries_remaining == 0
               begin
-                response  = Locomotive::Mounter::EngineApi.post("/#{resource_name}/#{id}.json", query)
+                response  = Locomotive::Mounter::EngineApi.post("/#{resource_name}.json", query)
                 data      = response.parsed_response
               rescue
                 self.log 'Request Failed!'
