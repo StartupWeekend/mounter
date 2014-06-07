@@ -79,7 +79,6 @@ module Locomotive
             query[:query][:locale] = locale if locale
 
             until tries_remaining == 0
-              self.log "Attempting request"
               response  = Locomotive::Mounter::EngineApi.put("/#{resource_name}/#{id}.json", query)
               data      = response.parsed_response
               if response.success?
@@ -87,6 +86,7 @@ module Locomotive
               end
               self.log 'Request Failed, Retrying!'
               tries_remaining -= 1
+              sleep 30
             end
 
             message = data
@@ -122,7 +122,6 @@ module Locomotive
             query[:query][:locale] = locale if locale
 
             until tries_remaining == 0
-              self.log "Attempting request"
               response  = Locomotive::Mounter::EngineApi.put("/#{resource_name}/#{id}.json", query)
               data      = response.parsed_response
               if response.success?
@@ -130,6 +129,7 @@ module Locomotive
               end
               self.log 'Request Failed, Retrying!'
               tries_remaining -= 1
+              sleep 30
             end
 
             message = data
