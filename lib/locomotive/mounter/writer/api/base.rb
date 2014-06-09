@@ -83,14 +83,14 @@ module Locomotive
                 response  = Locomotive::Mounter::EngineApi.post("/#{resource_name}.json", query)
                 data      = response.parsed_response
               rescue
-                self.log 'Request Failed!'
+                self.log "\nError encounted with request\n"
               end
               if response && response.success?
                 return self.raw_data_to_object(data)
               end
-              self.log 'Retrying!'
+              self.log "\nRequest Failed! ... Retrying! \n"
               tries_remaining -= 1
-              sleep 30
+              sleep 10
             end
 
             message = data
@@ -130,14 +130,14 @@ module Locomotive
                 response  = Locomotive::Mounter::EngineApi.put("/#{resource_name}/#{id}.json", query)
                 data      = response.parsed_response
               rescue
-                self.log 'Request Failed!'
+                self.log "\nError encounted with request\n"
               end
               if response && response.success?
                 return self.raw_data_to_object(data)
               end
-              self.log 'Retrying!'
+              self.log "\nRequest Failed! ... Retrying! \n"
               tries_remaining -= 1
-              sleep 30
+              sleep 10
             end
 
             message = data
