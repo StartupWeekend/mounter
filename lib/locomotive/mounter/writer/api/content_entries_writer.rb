@@ -30,7 +30,7 @@ module Locomotive
                 end
               end
             end
-            sleep 10
+            self.throttle 10
           end
 
           def write
@@ -55,10 +55,12 @@ module Locomotive
                   end
 
                   self.register_relationships(slug, entry)
+                  self.throttle 2
                 end # content entries
               end # content type
             end # locale
 
+            self.throttle 10
             self.persist_content_entries_with_relationships
           end
 
@@ -126,6 +128,7 @@ module Locomotive
               updates.each do |params|
                 _id, slug = params.delete(:_id), params.delete(:slug)
                 self.put "content_types/#{slug}/entries", _id, params
+                self.throttle 2
               end
             end
           end

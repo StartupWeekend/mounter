@@ -66,6 +66,16 @@ module Locomotive
           self.parameters[:force] || false
         end
 
+        # By setting the throttle option to true, user content (content entries and
+        # editable elements from page) can be pushed too.
+        # By default, its value is false.
+        #
+        # @return [ Boolean ] True if the data option has been set to true
+        #
+        def throttle?
+          self.parameters[:throttle] || false
+        end
+
       end
 
     end

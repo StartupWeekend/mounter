@@ -15,6 +15,8 @@ module Locomotive
 
           delegate :force?, to: :runner
 
+          delegate :throttle?, to: :runner
+
           def initialize(mounting_point, runner)
             self.mounting_point = mounting_point
             self.runner         = runner
@@ -35,6 +37,16 @@ module Locomotive
           #
           def data?
             self.runner.parameters[:data] || false
+          end
+
+          # By setting the data option to true, user content (content entries and
+          # editable elements from page) can be pushed too.
+          # By default, its value is false.
+          #
+          # @return [ Boolean ] True if the data option has been set to true
+          #
+          def throttle duration = 2
+            sleep duration if self.throttle?
           end
 
           # Get remote resource(s) by the API
