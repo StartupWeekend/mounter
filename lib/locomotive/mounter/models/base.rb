@@ -6,7 +6,7 @@ module Locomotive
 
         include Locomotive::Mounter::Fields
 
-        attr_accessor :_id, :mounting_point, :created_at, :updated_at
+        attr_accessor :_id, :mounting_point, :created_at, :updated_at, :_skip
 
         ## methods ##
 
@@ -18,6 +18,10 @@ module Locomotive
 
         def persisted?
         	!self._id.blank?
+        end
+
+        def skip?
+          self._skip == true
         end
 
         protected

@@ -30,6 +30,7 @@ module Locomotive
                 end
               end
             end
+            sleep 10
           end
 
           def write
@@ -40,6 +41,11 @@ module Locomotive
 
               self.content_types.each do |slug, content_type|
                 (content_type.entries || []).each do |entry|
+                  if entry.skip?
+                    self.output_resource_op entry
+                    self.output_resource_op_status entry, :skipped
+                    next
+                  end
                   next unless entry.translated_in?(locale)
 
                   if entry.persisted?
@@ -216,6 +222,13 @@ module Locomotive
             return if content_entry.nil? || response.nil?
 
             content_entry._id = response['_id']
+
+            # unless force param is set
+            unless self.force?
+              # self.log "\n"
+              # self.log content_entry.content_type.file_fields.collect { |field| field.name }
+              content_entry._skip = content_entry.eql? response
+            end
           end
 
         end

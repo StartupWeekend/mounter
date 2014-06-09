@@ -239,6 +239,26 @@ module Locomotive
           "#{self.content_type.slug} / #{self._slug}"
         end
 
+        def eql? obj
+          entry = self.to_hash[self._label]
+          file_fields = self.content_type.file_fields.collect { |field| field.name }
+          # iterate through keys for content entry and response
+          (entry.keys | obj.keys).each do | key |
+            # skip unless the entry has the field and it is not a file field
+            next unless entry[key] && obj[key] && !file_fields.include?(key)
+            # if key value is array, sort it
+            if entry[key].kind_of?(Array)
+              entry[key].sort!
+              obj[key].sort!
+            end
+            # unless the response has the key and the values are equal, set skip to false and break
+            unless obj[key] == entry[key]
+              return false
+            end
+          end
+          true
+        end
+
         protected
 
         # Sets the slug of the instance by using the value of the highlighted field
