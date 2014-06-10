@@ -41,6 +41,8 @@ module Locomotive
 
               self.content_types.each do |slug, content_type|
                 (content_type.entries || []).each do |entry|
+                  self.register_relationships(slug, entry)
+
                   if entry.skip?
                     self.output_resource_op entry
                     self.output_resource_op_status entry, :skipped
@@ -54,7 +56,6 @@ module Locomotive
                     self.create_content_entry(slug, entry)
                   end
 
-                  self.register_relationships(slug, entry)
                   self.throttle 2
                 end # content entries
               end # content type
