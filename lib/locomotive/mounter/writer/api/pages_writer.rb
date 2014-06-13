@@ -25,19 +25,16 @@ module Locomotive
 
             # set the unique identifier to each local page
             self.get(:pages, nil, true).each do |attributes|
-              page = self.pages[attributes['fullpath'].dasherize]
+
+              page = self.pages_to_list.find do |page|
+                page.fullpath == attributes['fullpath'].dasherize
+              end
 
               self.remote_translations[attributes['fullpath']] = attributes['translated_in']
 
-              page._id = attributes['id'] if page
+              page._id = attributes['_id'] if page
             end
 
-            # assign the parent_id and the content_type_id to all the pages
-            self.pages.values.each do |page|
-              next if page.index_or_404?
-
-              page.parent_id = page.parent._id
-            end
           end
 
           # Write all the pages to the remote destination
@@ -118,7 +115,7 @@ module Locomotive
             response = self.post :pages, params, nil, true
 
             if response
-              page._id = response['id']
+              page._id = response['_id']
               self.new_pages << page._id
             end
 
@@ -151,6 +148,17 @@ module Locomotive
           #
           def pages
             self.mounting_point.pages
+          end
+
+          # Create a ordered list of pages from the Hash
+          #
+          # @return [ Array ] An ordered list of pages
+          #
+          def pages_to_list
+            # sort by fullpath first
+            list = self.pages.values.sort { |a, b| a.fullpath <=> b.fullpath }
+            # sort finally by depth
+            list.sort { |a, b| a.depth <=> b.depth }
           end
 
           # # Return the pages which are layouts for others.

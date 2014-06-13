@@ -13,9 +13,9 @@ module Locomotive
 
           # It writes all the pages into files
           def write
-            self.write_page(self.mounting_point.pages['index'])
+            self.write_page(self.pages['index'])
 
-            self.write_page(self.mounting_point.pages['404'])
+            self.write_page(self.pages['404'])
           end
 
           protected
@@ -34,7 +34,7 @@ module Locomotive
               default_locale = locale.to_sym == self.mounting_point.default_locale.to_sym
 
               # we do not need the localized version of the filepath
-              filepath = page.fullpath.dasherize
+              filepath = page._fullpath.dasherize
 
               Locomotive::Mounter.with_locale(locale) do
                 # we assume the filepath is already localized
@@ -83,6 +83,25 @@ module Locomotive
             content.force_encoding('utf-8').gsub!(/[("']\/sites\/[0-9a-f]{24}\/assets\/(([^;.]+)\/)*([a-zA-Z_\-0-9]+)\.[a-z]{2,3}[)"']/) do |path|
               "/#{$3}"
             end
+          end
+
+          # Shortcut to get pages.
+          #
+          # @return [ Hash ] The hash whose key is the fullpath and the value is the page itself
+          #
+          def pages
+            self.mounting_point.pages
+          end
+
+          # Create a ordered list of pages from the Hash
+          #
+          # @return [ Array ] An ordered list of pages
+          #
+          def pages_to_list
+            # sort by fullpath first
+            list = self.pages.values.sort { |a, b| a.fullpath <=> b.fullpath }
+            # sort finally by depth
+            list.sort { |a, b| a.depth <=> b.depth }
           end
 
         end
