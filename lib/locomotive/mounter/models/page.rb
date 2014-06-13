@@ -10,6 +10,7 @@ module Locomotive
         field :title,             localized: true
         field :slug,              localized: true
         field :fullpath,          localized: true
+        field :_fullpath,         localized: true
         field :redirect_url,      localized: true
         field :redirect_type,     default: 301
         field :template,          localized: true
@@ -262,7 +263,7 @@ module Locomotive
         def localize_fullpath(locales = nil)
           locales ||= self.translated_in
           _parent_fullpath  = self.parent.try(:fullpath)
-          _fullpath, _slug  = self.fullpath.try(:clone), self.slug.to_s.clone
+          _fullpath, _slug  = self.fullpath.try(:clone).to_s, self.slug.to_s.clone
 
           locales.each do |locale|
             Locomotive::Mounter.with_locale(locale) do
@@ -272,7 +273,7 @@ module Locomotive
               elsif _parent_fullpath == 'index'
                 self.fullpath = self.slug || _slug
               else
-                self.fullpath = File.join(parent.fullpath || _parent_fullpath, self.slug || _slug)
+                self.fullpath = File.join(parent.fullpath.to_s || _parent_fullpath, self.slug.to_s || _slug)
               end
             end
           end
@@ -363,7 +364,7 @@ module Locomotive
         # @return [ Hash ] The params
         #
         def to_params
-          params = self.filter_attributes %w(title parent_id slug redirect_url redirect_type handle listed published searchable cache_strategy
+          params = self.filter_attributes %w(title parent_id _fullpath slug redirect_url redirect_type handle listed published searchable cache_strategy
             response_type position templatized seo_title meta_description meta_keywords)
 
           # slug

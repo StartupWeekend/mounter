@@ -51,7 +51,7 @@ module Locomotive
             parent.set_default_template_for_each_locale(self.default_locale)
 
             list.dup.each do |page|
-              next unless self.is_subpage_of?(page.fullpath, parent.fullpath)
+              next unless self.is_subpage_of?(page, parent)
 
               # attach the page to the parent (order by position), also set the parent
               parent.add_child(page)
@@ -107,7 +107,7 @@ module Locomotive
 
             unless self.pages.key?(fullpath)
               attributes[:title]    = File.basename(fullpath).humanize
-              attributes[:fullpath] = fullpath
+              attributes[:fullpath] = attributes[:_fullpath] = fullpath
 
               page = Locomotive::Mounter::Models::Page.new(attributes)
               page.mounting_point = self.mounting_point
@@ -181,14 +181,12 @@ module Locomotive
           #
           # @return [ Boolean] True if the page is a sub page of the parent one
           #
-          def is_subpage_of?(fullpath, parent_fullpath)
-            return false if %w(index 404).include?(fullpath)
+          def is_subpage_of?(page, parent)
+            return false if %w(index 404).include?(page._fullpath)
 
-            if parent_fullpath == 'index' && fullpath.split('/').size == 1
-              return true
-            end
+            return true if parent._fullpath == 'index' && page._fullpath.split('/').size == 1
 
-            File.dirname(fullpath.dasherize) == parent_fullpath.dasherize
+            File.dirname(page._fullpath.dasherize) == parent._fullpath.dasherize
           end
 
           # Output simply the tree structure of the pages.

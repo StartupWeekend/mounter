@@ -66,7 +66,7 @@ module Locomotive
           # Record pages found in file system
           def fetch
             self.get(:pages).each do |attributes|
-              page = self.add(attributes['fullpath'], attributes)
+              page = self.add(attributes['_fullpath'], attributes)
 
               self.mounting_point.locales[1..-1].each do |locale|
                 # if not translated, no need to make an api call for that locale
@@ -129,11 +129,11 @@ module Locomotive
               return page.parent_id == parent._id
             end
 
-            if parent.fullpath == 'index' && page.fullpath.split('/').size == 1
+            if parent._fullpath == 'index' && page._fullpath.split('/').size == 1
               return true
             end
 
-            File.dirname(page.fullpath.dasherize) == parent.fullpath.dasherize
+            File.dirname(page._fullpath.dasherize) == parent._fullpath.dasherize
           end
 
           # Only keep the minimal attributes from a list of
@@ -162,7 +162,7 @@ module Locomotive
           end
 
           def safe_attributes
-            %w(_id title slug handle fullpath translated_in
+            %w(_id title slug handle fullpath _fullpath translated_in
             parent_id target_klass_slug
             published listed templatized editable_elements
             redirect_url cache_strategy response_type position
