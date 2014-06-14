@@ -27,7 +27,7 @@ module Locomotive
             self.get(:pages, nil, true).each do |attributes|
 
               page = self.pages_to_list.find do |page|
-                page.fullpath == attributes['fullpath'].dasherize
+                page.fullpath == attributes['fullpath']
               end
 
               self.remote_translations[attributes['fullpath']] = attributes['translated_in']

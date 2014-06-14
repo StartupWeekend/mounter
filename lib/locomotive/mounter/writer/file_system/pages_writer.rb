@@ -34,7 +34,9 @@ module Locomotive
               default_locale = locale.to_sym == self.mounting_point.default_locale.to_sym
 
               # we do not need the localized version of the filepath
-              filepath = page._fullpath.dasherize
+              filepath = page.try(:_fullpath)
+
+              filepath ||= page.fullpath
 
               Locomotive::Mounter.with_locale(locale) do
                 # we assume the filepath is already localized
