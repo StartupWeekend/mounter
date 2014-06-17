@@ -125,15 +125,18 @@ module Locomotive
           def is_subpage_of?(page, parent)
             return false if page.index_or_404?
 
+            page_fullpath = page._fullpath || page.fullpath
+            parent_fullpath = parent._fullpath || parent.fullpath
+
             if page.parent_id # only in the new version of the engine
               return page.parent_id == parent._id
             end
 
-            if parent._fullpath == 'index' && page._fullpath.split('/').size == 1
+            if page_fullpath == 'index' && page_fullpath.split('/').size == 1
               return true
             end
 
-            File.dirname(page._fullpath.dasherize) == parent._fullpath.dasherize
+            File.dirname(page_fullpath.dasherize) == parent_fullpath.dasherize
           end
 
           # Only keep the minimal attributes from a list of
