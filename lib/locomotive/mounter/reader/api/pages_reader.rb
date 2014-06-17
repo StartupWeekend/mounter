@@ -66,7 +66,8 @@ module Locomotive
           # Record pages found in file system
           def fetch
             self.get(:pages).each do |attributes|
-              page = self.add(attributes['_fullpath'], attributes)
+              fullpath = attributes['_fullpath'] || attributes['fullpath']
+              page = self.add(fullpath, attributes)
 
               self.mounting_point.locales[1..-1].each do |locale|
                 # if not translated, no need to make an api call for that locale
@@ -125,8 +126,8 @@ module Locomotive
           def is_subpage_of?(page, parent)
             return false if page.index_or_404?
 
-            page_fullpath = page._fullpath || page.fullpath
-            parent_fullpath = parent._fullpath || parent.fullpath
+            page_fullpath = page.try(:_fullpath) || page.fullpath
+            parent_fullpath = parent.try(:_fullpath) || parent.fullpath
 
             if page.parent_id # only in the new version of the engine
               return page.parent_id == parent._id
