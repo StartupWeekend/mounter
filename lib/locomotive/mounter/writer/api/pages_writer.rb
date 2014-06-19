@@ -32,7 +32,7 @@ module Locomotive
 
               self.remote_translations[attributes['fullpath']] = attributes['translated_in']
 
-              page._id = attributes['_id'] if page
+              page._id = (attributes['_id'] || attributes['id']) if page
             end
 
           end
@@ -115,7 +115,7 @@ module Locomotive
             response = self.post :pages, params, nil, true
 
             if response
-              page._id = response['_id']
+              page._id = response['_id'] || response['id']
               self.new_pages << page._id
             end
 
