@@ -124,9 +124,9 @@ module Locomotive
           when :belongs_to
             field.klass.find_entry(value)
           when :has_many
-            field.klass.find_entries_by(field.inverse_of, [self._label, self._permalink])
+            field.klass.find_entries_by(field.inverse_of, [self._label, self._permalink]) || []
           when :many_to_many
-            field.klass.find_entries_among(value)
+            field.klass.find_entries_among(value) || []
           else
             # :string, :text, :select, :boolean, :email, :integer, :float, :tags
             value

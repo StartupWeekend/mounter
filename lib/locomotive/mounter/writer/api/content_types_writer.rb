@@ -64,7 +64,6 @@ module Locomotive
             self.output_resource_op content_type
 
             response = self.post :content_types, content_type.to_params, nil, true
-
             self.apply_response(content_type, response)
 
             # status = self.response_to_status(response)
@@ -111,9 +110,10 @@ module Locomotive
           def apply_response(content_type, response)
             return if content_type.nil? || response.nil?
 
-            content_type._id = response['id']
+            content_type._id = response['_id']
             content_type.klass_name = response['klass_name']
 
+            return if response['entries_custom_fields'].nil?
             response['entries_custom_fields'].each do |remote_field|
               field = content_type.find_field(remote_field['name'])
               _id   = remote_field['id']
@@ -137,6 +137,7 @@ module Locomotive
           #
           def content_type_to_params(content_type)
             content_type.to_params(all_fields: true).tap do |params|
+              # next if params[:entries_custom_fields].nil?
               params[:entries_custom_fields].each do |attributes|
                 attributes.delete(:select_options) unless self.force?
               end
