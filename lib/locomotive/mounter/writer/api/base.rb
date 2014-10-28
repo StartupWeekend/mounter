@@ -100,6 +100,8 @@ module Locomotive
               if response && response.success?
                 return self.raw_data_to_object(data)
               end
+              self.log "\nError encounted with request\n"
+              self.log response.parsed_response
               self.log "\nRequest Failed! ... Retrying! \n"
               tries_remaining -= 1
               sleep 10
