@@ -27,7 +27,7 @@ module Locomotive
             self.get(:pages, nil, true).each do |attributes|
 
               page = self.pages_to_list.find do |page|
-                page.fullpath == attributes['fullpath']
+                page.fullpath.dasherize == attributes['fullpath'].dasherize
               end
 
               self.remote_translations[attributes['fullpath']] = attributes['translated_in']
@@ -41,7 +41,6 @@ module Locomotive
           def write
             self.each_locale do |locale|
               self.output_locale
-
               done, attempts = {}, 0
               while done.size < pages.length - 1 && attempts < MAX_ATTEMPTS
                 _write(pages['index'], done, done.size > 0)
